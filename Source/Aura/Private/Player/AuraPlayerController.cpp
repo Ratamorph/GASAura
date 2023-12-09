@@ -19,17 +19,18 @@ void AAuraPlayerController::BeginPlay()
 	check(AuraContext);
 
 	UEnhancedInputLocalPlayerSubsystem * SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	check(SubSystem);
+	if(SubSystem)
+	{
+		SubSystem->AddMappingContext(AuraContext,0);
+		
+		bShowMouseCursor = true;
+		DefaultMouseCursor = EMouseCursor::Default;
 
-	SubSystem->AddMappingContext(AuraContext,0);
-
-	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Default;
-
-	FInputModeGameAndUI InputModeData;
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-	InputModeData.SetHideCursorDuringCapture(false);
-	SetInputMode(InputModeData);
+		FInputModeGameAndUI InputModeData;
+		InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputModeData.SetHideCursorDuringCapture(false);
+		SetInputMode(InputModeData);
+	}
 }
 
 void AAuraPlayerController::SetupInputComponent()
