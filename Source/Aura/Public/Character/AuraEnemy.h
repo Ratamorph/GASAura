@@ -21,4 +21,7 @@ public:
 	virtual void UnHighlightActor() override;
 
 	virtual void BeginPlay() override;
+
+private:
+	virtual void InitAbilityActorInfo() override;
 };
