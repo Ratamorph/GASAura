@@ -26,9 +26,9 @@ void AAuraCharacterBase::InitAbilityActorInfo()
 {
 }
 
-void AAuraCharacterBase::InitializePrimaryAttributes()
+void AAuraCharacterBase::ApplyGameplayEffectToSelf(TSubclassOf<UGameplayEffect> Effect) const
 {
-	if(!DefaultPrimaryAttributes)
+	if(!Effect)
 		return;
 
 	check(GetAbilitySystemComponent());
@@ -38,9 +38,15 @@ void AAuraCharacterBase::InitializePrimaryAttributes()
 
 	FGameplayEffectSpecHandle EffectSpecHandle;
 
-	EffectSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(DefaultPrimaryAttributes, 1, EffectContextHandle);
+	EffectSpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(Effect, 1, EffectContextHandle);
 	FActiveGameplayEffectHandle ActiveEffectHandle = GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 	
+}
+
+void AAuraCharacterBase::InitializeDefaultAttributes() const
+{
+	ApplyGameplayEffectToSelf(DefaultPrimaryAttributes);
+	ApplyGameplayEffectToSelf(DefaultSecondaryAttributes);
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
