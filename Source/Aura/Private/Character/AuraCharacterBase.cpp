@@ -59,3 +59,8 @@ UAttributeSet* AAuraCharacterBase::GetAttributeSet() const
 	return AttributeSet;
 }
 
+int32 AAuraCharacterBase::GetPlayerLevel()
+{
+	return 1;
+}
+

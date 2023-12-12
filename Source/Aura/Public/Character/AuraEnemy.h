@@ -19,8 +19,13 @@ public:
 	AAuraEnemy();
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	virtual int32 GetPlayerLevel() override;
+
 
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character attributes")
+	int32 Level = 1;
 
 private:
 	virtual void InitAbilityActorInfo() override;
