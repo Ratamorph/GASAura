@@ -49,6 +49,14 @@ void AAuraCharacterBase::InitializeDefaultAttributes() const
 	ApplyGameplayEffectToSelf(DefaultSecondaryAttributes);
 }
 
+void AAuraCharacterBase::ApplyDefaultEffects() const
+{
+	for(auto Effect : DefaultEffectsToApply)
+	{
+		ApplyGameplayEffectToSelf(Effect);
+	}
+}
+
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;

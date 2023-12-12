@@ -72,4 +72,5 @@ void AAuraCharacter::InitAbilityActorInfo()
 	}
 
 	InitializeDefaultAttributes();
+	ApplyDefaultEffects();
 }

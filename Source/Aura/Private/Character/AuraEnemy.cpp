@@ -45,6 +45,7 @@ void AAuraEnemy::BeginPlay()
 
 	InitAbilityActorInfo();
 	InitializeDefaultAttributes();
+	ApplyDefaultEffects();
 }
 
 void AAuraEnemy::InitAbilityActorInfo()
