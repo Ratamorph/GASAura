@@ -25,5 +25,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GamePlayTagsInstance.Attributes_Primary_ManaRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.ManaRegeneration"), FString("ManaRegeneration"));
 	GamePlayTagsInstance.Attributes_Primary_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxHealth"), FString("MaxHealth"));
 	GamePlayTagsInstance.Attributes_Primary_MaxMana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxMana"), FString("MaxMana"));
-	
+
+	GamePlayTagsInstance.Input_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Primary"), FString("Primary input"));
+	GamePlayTagsInstance.Input_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Secondary"), FString("Secondary input"));
+	GamePlayTagsInstance.Input_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.1"), FString("Ability 1"));
+	GamePlayTagsInstance.Input_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.2"), FString("Ability 2"));
+	GamePlayTagsInstance.Input_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.3"), FString("Ability 3"));
+	GamePlayTagsInstance.Input_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.4"), FString("Ability 4"));
+
 }

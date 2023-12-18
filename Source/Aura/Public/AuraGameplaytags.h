@@ -34,6 +34,13 @@ public:
 	FGameplayTag Attributes_Primary_MaxHealth;
 	FGameplayTag Attributes_Primary_MaxMana;
 
+	//Input
+	FGameplayTag Input_Primary;
+	FGameplayTag Input_Secondary;
+	FGameplayTag Input_1;
+	FGameplayTag Input_2;
+	FGameplayTag Input_3;
+	FGameplayTag Input_4;
 
 protected:
 	
