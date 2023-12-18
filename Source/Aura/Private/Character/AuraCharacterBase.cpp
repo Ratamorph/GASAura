@@ -4,6 +4,7 @@
 #include "Character/AuraCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 
 // Sets default values
 AAuraCharacterBase::AAuraCharacterBase()
@@ -55,6 +56,15 @@ void AAuraCharacterBase::ApplyDefaultEffects() const
 	{
 		ApplyGameplayEffectToSelf(Effect);
 	}
+}
+
+void AAuraCharacterBase::GrantInitialAbilities() const
+{
+	if(!HasAuthority())
+		return;
+	
+	UAuraAbilitySystemComponent * ASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	ASC->GrantAbilitiesFromArray(InitialAbilities);
 }
 
 UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const

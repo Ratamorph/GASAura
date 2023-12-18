@@ -5,6 +5,7 @@
 #include "UI/Widget/AuraUserWidget.h"
 
 #include "Blueprint/UserWidget.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 UOverlayWidgetController* AAuraHUD::GetWidgetController(const FWidgetControllerParams& Params)
@@ -19,8 +20,20 @@ UOverlayWidgetController* AAuraHUD::GetWidgetController(const FWidgetControllerP
 	return OverlayWidgetControllerPtr;
 }
 
+UAttributeMenuWidgetController* AAuraHUD::GetAttributesWidgetController(const FWidgetControllerParams& Params)
+{
+	if(AttributesWidgetControllerPtr == nullptr)
+	{
+		AttributesWidgetControllerPtr = NewObject<UAttributeMenuWidgetController>(this, AttributesWidgetControllerClass);
+		AttributesWidgetControllerPtr->SetWidgetControllerParams(Params);
+		AttributesWidgetControllerPtr->BindCallbacksToDependencies();
+	}
+
+	return AttributesWidgetControllerPtr;
+}
+
 void AAuraHUD::InitOverlay(APlayerController* PController, APlayerState* PState,
-	UAbilitySystemComponent* AbilitySystemComp, UAttributeSet* AttribSet)
+                           UAbilitySystemComponent* AbilitySystemComp, UAttributeSet* AttribSet)
 {
 
 	checkf(OverlayWidgetClass, TEXT("Overlay widget class not set"));
