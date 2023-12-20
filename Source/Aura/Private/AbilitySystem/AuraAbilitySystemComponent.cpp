@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 
+#include "AbilitySystem/AuraGameplayAbility.h"
+
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::EffectApplied);
@@ -13,7 +15,48 @@ void UAuraAbilitySystemComponent::GrantAbilitiesFromArray(const TArray<TSubclass
 	for (const auto Ability : AbilityArray)
 	{
 		FGameplayAbilitySpec AbilitySpec = BuildAbilitySpecFromClass(Ability, 1);
-		GiveAbilityAndActivateOnce(AbilitySpec);
+		
+		if(const UAuraGameplayAbility *AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec.Ability))
+		{
+			AbilitySpec.DynamicAbilityTags.AddTag(AuraAbility->StartupInputTag);
+		}
+
+		GiveAbility(AbilitySpec);
+		//GiveAbilityAndActivateOnce(AbilitySpec);
+	}
+}
+
+void UAuraAbilitySystemComponent::AbilityInputTagHeld(FGameplayTag& InputTag)
+{
+	if(!InputTag.IsValid())
+		return;
+	
+	for (auto AbilitySpec : GetActivatableAbilities())
+	{
+		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			AbilitySpecInputPressed(AbilitySpec);
+			
+			if(!AbilitySpec.IsActive())
+				TryActivateAbility(AbilitySpec.Handle);
+		}
+		
+	}
+}
+
+void UAuraAbilitySystemComponent::AbilityInputTagReleased(FGameplayTag& InputTag)
+{
+	if(!InputTag.IsValid())
+		return;
+
+	for (auto AbilitySpec : GetActivatableAbilities())
+	{
+		if(AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			AbilitySpecInputReleased(AbilitySpec);
+			
+		}
+		
 	}
 }
 
