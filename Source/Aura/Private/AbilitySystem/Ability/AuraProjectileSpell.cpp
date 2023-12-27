@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Ability/AuraProjectileSpell.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Actor/AuraProjectile.h"
 #include "Interaction/AuraCombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -42,6 +44,11 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 		SpawnTransform.SetRotation(Rotation.Quaternion());
 		
 		SpawnedProjectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass, SpawnTransform, OwningActor, OwningPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+		SpawnedProjectile->DamageEffectSpecHandle = SpecHandle;
+		
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 	}
 	
