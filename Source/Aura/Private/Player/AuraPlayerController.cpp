@@ -50,6 +50,9 @@ void AAuraPlayerController::SetupInputComponent()
 	UAuraEnhancedInputComponent * EnhancedInputComponent = CastChecked<UAuraEnhancedInputComponent>(InputComponent);
 
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	EnhancedInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::OnShiftPressed);
+	EnhancedInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::OnShiftReleased);
+
 	EnhancedInputComponent->BindAbilityActions(AbilityInputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 
@@ -156,12 +159,9 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		return;
 	}
 
-	if(bTargeting)
-	{
-		if(GetASC())
-			GetASC()->AbilityInputTagReleased(InputTag);
-	}
-	else
+	GetASC()->AbilityInputTagReleased(InputTag);
+	
+	if(!bTargeting && !bShiftHeld)
 	{
 		APawn * ControlledPawn = GetPawn();
 		
@@ -185,7 +185,6 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 		bTargeting = false;
 		FollowTime = 0.f;
-		
 	}
 	
 	//GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Blue, *InputTag.ToString());
@@ -201,7 +200,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 
-	if(bTargeting)
+	if(bTargeting || bShiftHeld)
 	{
 		if(GetASC())
 			GetASC()->AbilityInputTagHeld(InputTag);

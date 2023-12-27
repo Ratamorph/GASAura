@@ -15,7 +15,13 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	UKismetSystemLibrary::PrintString(this, "Ability Activated");
 
-	const bool bIsServer = HasAuthority(&ActivationInfo);
+	
+		
+}
+
+void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
+{
+	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 
 	if(!bIsServer)
 		return;
@@ -28,16 +34,15 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	if(CombatInterface)
 	{
 		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
-
+		FRotator Rotation = (TargetLocation - SocketLocation).Rotation();
+		Rotation.Pitch = 0;
+		
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rotation.Quaternion());
 		
-		AAuraProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass, SpawnTransform, OwningActor, OwningPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-
+		SpawnedProjectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass, SpawnTransform, OwningActor, OwningPawn, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 	}
 	
-
-	
-		
 }
