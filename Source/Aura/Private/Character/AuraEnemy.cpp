@@ -47,11 +47,42 @@ void AAuraEnemy::BeginPlay()
 	ApplyDefaultEffects();
 }
 
+void AAuraEnemy::BroadcastInitialValues()
+{
+	if(const UAuraAttributeSet * AuraAttributeSet = Cast<UAuraAttributeSet>(AttributeSet))
+	{
+		OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
+		OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());
+	}
+}
+
+void AAuraEnemy::BindCallbacksToDependencies()
+{
+	const UAuraAttributeSet * AuraAttributeSet = Cast<UAuraAttributeSet>(AttributeSet);
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthChanged.Broadcast(Data.NewValue);
+		}
+	);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxHealthChanged.Broadcast(Data.NewValue);
+		}
+	);
+	
+}
+
 void AAuraEnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this,this);
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 	InitializeDefaultAttributes();
 	ApplyDefaultEffects();
+	BroadcastInitialValues();
+	BindCallbacksToDependencies();
 }
 

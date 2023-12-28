@@ -7,6 +7,8 @@
 #include "Interaction/EnemyInterface.h"
 #include "AuraEnemy.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyOnAttributeChangedSignature, float, NewValue);
+
 /**
  * 
  */
@@ -20,9 +22,16 @@ public:
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
 	virtual int32 GetPlayerLevel() override;
+	
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FEnemyOnAttributeChangedSignature OnHealthChanged;
 
-
+	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
+	FEnemyOnAttributeChangedSignature OnMaxHealthChanged;
+	
 	virtual void BeginPlay() override;
+	virtual void BroadcastInitialValues();
+	virtual void BindCallbacksToDependencies();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character attributes")
 	int32 Level = 1;
