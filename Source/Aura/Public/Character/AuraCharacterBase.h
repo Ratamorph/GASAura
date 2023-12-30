@@ -25,6 +25,10 @@ public:
 	virtual int32 GetPlayerLevel() override;
 	virtual FVector GetCombatSocketLocation() override;
 
+	virtual void Die() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
 protected:
 	virtual void BeginPlay() override;
 
@@ -49,10 +53,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Effects")
 	TArray<TSubclassOf<UGameplayEffect>> DefaultEffectsToApply;
 
-	void InitializeDefaultAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 	void ApplyDefaultEffects() const;
 
 	void GrantInitialAbilities() const;
+
+	void ApplyGameplayEffectToSelf (TSubclassOf<UGameplayEffect> Effect) const;
 	
 private:
 
@@ -61,7 +67,7 @@ private:
 	
 	virtual void InitAbilityActorInfo();
 
-	void ApplyGameplayEffectToSelf (TSubclassOf<UGameplayEffect> Effect) const;
+	
 
 	
 };

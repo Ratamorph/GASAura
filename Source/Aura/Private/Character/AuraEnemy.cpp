@@ -3,9 +3,11 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "AuraGameplaytags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AAuraEnemy::AAuraEnemy()
 {
@@ -45,6 +47,8 @@ void AAuraEnemy::BeginPlay()
 	InitAbilityActorInfo();
 	InitializeDefaultAttributes();
 	ApplyDefaultEffects();
+
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting? 0 : BaseWalkSpeed;
 }
 
 void AAuraEnemy::BroadcastInitialValues()
@@ -73,7 +77,26 @@ void AAuraEnemy::BindCallbacksToDependencies()
 			OnMaxHealthChanged.Broadcast(Data.NewValue);
 		}
 	);
+
+	//register to the hit react tag added event
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effect_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AAuraEnemy::HitReactTagChanged);
+}
+
+void AAuraEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 Count)
+{
+	bHitReacting = Count > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting? 0 : BaseWalkSpeed;
 	
+}
+
+void AAuraEnemy::Die()
+{
+	SetLifeSpan(LifespanAfterDeath);
+
+	UMaterialInstanceDynamic * DynamicMaterial = GetMesh()->CreateDynamicMaterialInstance(0, CharacterDissolveMaterial);
+	GetMesh()->SetMaterial(0, DynamicMaterial);
+	StartDissolveEffect(DynamicMaterial);;
+	Super::Die();
 }
 
 void AAuraEnemy::InitAbilityActorInfo()
@@ -84,5 +107,23 @@ void AAuraEnemy::InitAbilityActorInfo()
 	ApplyDefaultEffects();
 	BroadcastInitialValues();
 	BindCallbacksToDependencies();
+}
+
+void AAuraEnemy::InitializeDefaultAttributes() const
+{
+	//Super::InitializeDefaultAttributes();
+
+	if(CharacterClassDefaultParams)
+	{
+		const FCharacterClassDefaultInfo CharacterClassDefaultInfo = CharacterClassDefaultParams->GetClassDefaultInfo(CharacterClass);
+		
+		ApplyGameplayEffectToSelf(CharacterClassDefaultInfo.PrimaryAttributes);
+		ApplyGameplayEffectToSelf(CharacterClassDefaultParams->SecondaryAttributes);
+		ApplyGameplayEffectToSelf(CharacterClassDefaultParams->VitalAttributes);
+
+		UAuraAbilitySystemComponent * ASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+
+		ASC->GrantAbilitiesFromArray(CharacterClassDefaultParams->CommonAbilities);
+	}
 }
 

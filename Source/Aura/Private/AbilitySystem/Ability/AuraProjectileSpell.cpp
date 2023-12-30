@@ -8,6 +8,7 @@
 #include "Actor/AuraProjectile.h"
 #include "Interaction/AuraCombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "AuraGameplaytags.h"
 
 void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -47,6 +48,12 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& TargetLocation)
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+
+		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+		
+		//set the damage
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle,GameplayTags.Damage, Damage.GetValueAtLevel(GetAbilityLevel()));
+		
 		SpawnedProjectile->DamageEffectSpecHandle = SpecHandle;
 		
 		SpawnedProjectile->FinishSpawning(SpawnTransform);

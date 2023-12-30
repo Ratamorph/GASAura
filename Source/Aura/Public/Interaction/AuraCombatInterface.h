@@ -26,4 +26,9 @@ public:
 
 	UFUNCTION(Blueprintable, BlueprintImplementableEvent, BlueprintCallable)
 	void UpdateFacingTarget(FVector FacingTarget);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage * GetHitReact();
+
+	virtual void Die() = 0;
 };

@@ -42,6 +42,10 @@ public:
 	FGameplayTag Input_3;
 	FGameplayTag Input_4;
 
+	FGameplayTag Damage;
+	FGameplayTag Effect_HitReact;
+	FGameplayTag Effect_Death;
+	
 protected:
 	
 private:
