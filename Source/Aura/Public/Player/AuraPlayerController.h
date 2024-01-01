@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
+class UDamageTextWidgetComponent;
 class USplineComponent;
 struct FGameplayTag;
 class UAuraAbilityInputConfig;
@@ -25,6 +26,8 @@ class AURA_API AAuraPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	AAuraPlayerController();
+
+	void SpawnDamageText(float Damage, ACharacter * TargetCharacter);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -73,9 +76,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f;
-
 	
 	TObjectPtr<USplineComponent> Spline;
 
-	
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	TSubclassOf<UDamageTextWidgetComponent> FloatingTextComponentClass;
 };

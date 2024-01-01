@@ -41,10 +41,10 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 {
 	if(ImpactSFX)
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSFX,this->GetActorLocation(), FRotator::ZeroRotator);
-
+	
 	if(NiagaraSystem)
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, NiagaraSystem, this->GetActorLocation(), FRotator::ZeroRotator);
-
+	
 	if(HasAuthority())
 	{
 		if(UAbilitySystemComponent * TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))

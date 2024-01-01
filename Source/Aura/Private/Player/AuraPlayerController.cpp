@@ -12,7 +12,9 @@
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/Input/AuraEnhancedInputComponent.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/Character.h"
 #include "Interaction/EnemyInterface.h"
+#include "UI/DamageTextWidgetComponent.h"
 
 
 AAuraPlayerController::AAuraPlayerController()
@@ -21,6 +23,18 @@ AAuraPlayerController::AAuraPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
+}
+
+void AAuraPlayerController::SpawnDamageText(float Damage, ACharacter * TargetCharacter)
+{
+	if(IsValid(TargetCharacter) && Damage > 0)
+	{
+		UDamageTextWidgetComponent* NewWidget = NewObject<UDamageTextWidgetComponent>(TargetCharacter, FloatingTextComponentClass);
+		NewWidget->RegisterComponent();
+		NewWidget->SetDamageText(Damage);
+		NewWidget->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		NewWidget->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	}
 }
 
 void AAuraPlayerController::BeginPlay()

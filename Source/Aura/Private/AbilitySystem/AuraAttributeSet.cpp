@@ -9,6 +9,8 @@
 #include "Net/UnrealNetwork.h"
 #include "AuraGameplaytags.h"
 #include "Interaction/AuraCombatInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerController.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -118,6 +120,15 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 	}
 }
 
+void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperties, float Value) const
+{
+	if(EffectProperties.SourceProperties.Character == EffectProperties.TargetProperties.Character)
+		return;
+	
+	AAuraPlayerController * PC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	PC->SpawnDamageText(Value, EffectProperties.TargetProperties.Character);
+}
+
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -140,6 +151,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	if(Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		const float LocalIncomingDamage = GetIncomingDamage();
+		
 		SetIncomingDamage(0);
 
 		if(LocalIncomingDamage > 0 )
@@ -164,8 +176,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				TagContainer.AddTag(FAuraGameplayTags::Get().Effect_HitReact);
 				//GetOwningAbilitySystemComponent()->TryActivateAbilitiesByTag(TagContainer);
 				EffectProperties.TargetProperties.AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+				
 			}
-			
+
+			ShowFloatingText(EffectProperties, LocalIncomingDamage);
 		}
 	}
 }
