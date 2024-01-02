@@ -5,6 +5,7 @@
 
 #include "AuraGameplaytags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -113,9 +114,12 @@ void AAuraEnemy::InitializeDefaultAttributes() const
 {
 	//Super::InitializeDefaultAttributes();
 
+	UCharacterClassInfo * CharacterClassDefaultParams = UAuraAbilitySystemLibrary::GetCharacterClassInfo(this);
+	
 	if(CharacterClassDefaultParams)
 	{
 		const FCharacterClassDefaultInfo CharacterClassDefaultInfo = CharacterClassDefaultParams->GetClassDefaultInfo(CharacterClass);
+
 		
 		ApplyGameplayEffectToSelf(CharacterClassDefaultInfo.PrimaryAttributes);
 		ApplyGameplayEffectToSelf(CharacterClassDefaultParams->SecondaryAttributes);

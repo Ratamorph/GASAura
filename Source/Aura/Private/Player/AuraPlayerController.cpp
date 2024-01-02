@@ -37,6 +37,11 @@ void AAuraPlayerController::SpawnDamageText(float Damage, ACharacter * TargetCha
 	}
 }
 
+UCharacterClassInfo* AAuraPlayerController::GetCharacterClassInfo()
+{
+	return CharacterClassDefaultParams;
+}
+
 void AAuraPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

@@ -56,14 +56,13 @@ public:
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 Count);
 
 	virtual void Die() override;
-	
+
+	//UPROPERTY(EditDefaultsOnly, Category="Character attributes")
+	//TObjectPtr<UCharacterClassInfo> CharacterClassDefaultParams;
+
 private:
 	virtual void InitAbilityActorInfo() override;
 
-	UPROPERTY(EditDefaultsOnly, Category="Character attributes")
-	TObjectPtr<UCharacterClassInfo> CharacterClassDefaultParams;
-
-	
 protected:
 	virtual void InitializeDefaultAttributes() const override;
 

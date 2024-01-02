@@ -5,19 +5,28 @@
 
 #include "AbilitySystemComponent.h"
 #include "AuraGameplaytags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "Interaction/AuraCombatInterface.h"
 
 struct AuraDamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ArmorPenetration);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(BlockChance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitChance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitResistence);
 	
 	AuraDamageStatics()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, Armor, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ArmorPenetration, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, BlockChance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitChance, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitDamage, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitResistence, Target, false);
 
 	}
 };
@@ -33,6 +42,9 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorPenetrationDef);
 	RelevantAttributesToCapture.Add(DamageStatics().BlockChanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitChanceDef);
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitDamageDef);
+	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitResistenceDef);
 }
 
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
@@ -41,14 +53,18 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const UAbilitySystemComponent * SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent * TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 
-	const AActor * SourceAvatar = nullptr;
-	const AActor * TargetAvatar = nullptr;
+	AActor * SourceAvatar = nullptr;
+	AActor * TargetAvatar = nullptr;
 
 	if(SourceASC)
 		SourceAvatar = SourceASC ->GetAvatarActor();
 
 	if(TargetASC)
 		TargetAvatar = TargetASC->GetAvatarActor();
+
+	IAuraCombatInterface* SourceCharacterCombatInterface = Cast<IAuraCombatInterface>(SourceAvatar);
+	IAuraCombatInterface* TargetCharacterCombatInterface = Cast<IAuraCombatInterface>(TargetAvatar);
+
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
@@ -80,9 +96,42 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	float ArmorPenetrationSource;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorPenetrationDef, EvaluatedParams, ArmorPenetrationSource);
 
-	const float EffectiveArmor = ArmorTarget * (100.0f - ArmorPenetrationSource * 0.25f) / 100.0f;
+	UCharacterClassInfo* CharacterClassInfo = UAuraAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
+	
+	float ArmorPenetrationCoef = 0.25f;
+	float EffectiveArmorCoef = 0.333f;
 
-	Damage *= (100 - EffectiveArmor * 0.333f) / 100;
+	const FRealCurve* ArmorPenetrationCurve = CharacterClassInfo->DamageCalcCoef.Get()->FindCurve(FName("ArmorPenetration"), FString());
+	const FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalcCoef.Get()->FindCurve(FName("EffectiveArmor"), FString());
+	
+	if(SourceCharacterCombatInterface)
+		ArmorPenetrationCoef = ArmorPenetrationCurve->Eval(SourceCharacterCombatInterface->GetPlayerLevel());
+
+	if(TargetCharacterCombatInterface)
+		EffectiveArmorCoef = EffectiveArmorCurve->Eval(TargetCharacterCombatInterface->GetPlayerLevel());
+	
+	const float EffectiveArmor = ArmorTarget * (100.0f - ArmorPenetrationSource * ArmorPenetrationCoef) / 100.0f;
+
+	Damage *= (100 - EffectiveArmor * EffectiveArmorCoef) / 100;
+
+	float CriticalHitChanceSource;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitChanceDef, EvaluatedParams, CriticalHitChanceSource);
+
+	float CriticalHitResistenceTarget;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitResistenceDef, EvaluatedParams, CriticalHitResistenceTarget);
+
+	const float EffectiveCritHitChance = CriticalHitChanceSource - CriticalHitResistenceTarget * 0.15f;
+	
+	bool Crit = FMath::RandRange(0.0f, 100.0f) <= EffectiveCritHitChance;
+
+	if(Crit)
+	{
+		float CriticalHitDamageSource;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalHitDamageDef, EvaluatedParams, CriticalHitDamageSource);
+
+		Damage *= 2;
+		Damage += CriticalHitDamageSource;
+	}
 	
 	FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
 	

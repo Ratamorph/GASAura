@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
+class UCharacterClassInfo;
 class UDamageTextWidgetComponent;
 class USplineComponent;
 struct FGameplayTag;
@@ -28,6 +29,8 @@ public:
 	AAuraPlayerController();
 
 	void SpawnDamageText(float Damage, ACharacter * TargetCharacter);
+
+	UCharacterClassInfo* GetCharacterClassInfo();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -81,4 +84,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Effects")
 	TSubclassOf<UDamageTextWidgetComponent> FloatingTextComponentClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Character attributes")
+	TObjectPtr<UCharacterClassInfo> CharacterClassDefaultParams;
+
 };

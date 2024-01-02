@@ -39,3 +39,15 @@ UAttributeMenuWidgetController* UAuraAbilitySystemLibrary::GetAttributeMenuWidge
 
 	return nullptr;
 }
+
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContext)
+{
+	UCharacterClassInfo * CharacterClassInfo = nullptr;
+
+	if(AAuraPlayerController * AuraPlayerController = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(WorldContext, 0)))
+	{
+		CharacterClassInfo = AuraPlayerController->GetCharacterClassInfo();
+	}
+		
+	return CharacterClassInfo;
+}
