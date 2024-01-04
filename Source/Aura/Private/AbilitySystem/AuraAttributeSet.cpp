@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 #include "AuraGameplaytags.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/AuraCombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
@@ -120,15 +121,6 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 	}
 }
 
-void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperties, float Value) const
-{
-	if(EffectProperties.SourceProperties.Character == EffectProperties.TargetProperties.Character)
-		return;
-	
-	AAuraPlayerController * PC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	PC->SpawnDamageText(Value, EffectProperties.TargetProperties.Character);
-}
-
 void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -179,9 +171,21 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				
 			}
 
-			ShowFloatingText(EffectProperties, LocalIncomingDamage);
+			const bool bIsBlockedHit = UAuraAbilitySystemLibrary::IsBlockedHit(EffectProperties.EffectContextHandle);
+			const bool bIsCritHit = UAuraAbilitySystemLibrary::IsCriticalHit(EffectProperties.EffectContextHandle);
+			
+			ShowFloatingText(EffectProperties, LocalIncomingDamage, bIsBlockedHit, bIsCritHit);
 		}
 	}
+}
+
+void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperties, float Value, bool BlockedHit, bool CritHit) const
+{
+	if(EffectProperties.SourceProperties.Character == EffectProperties.TargetProperties.Character)
+		return;
+	
+	AAuraPlayerController * PC = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	PC->SpawnDamageText(Value, BlockedHit, CritHit, EffectProperties.TargetProperties.Character);
 }
 
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const

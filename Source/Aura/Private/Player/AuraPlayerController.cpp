@@ -25,13 +25,13 @@ AAuraPlayerController::AAuraPlayerController()
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
-void AAuraPlayerController::SpawnDamageText(float Damage, ACharacter * TargetCharacter)
+void AAuraPlayerController::SpawnDamageText(float Damage, bool BlockedHit, bool CriticalHit, ACharacter * TargetCharacter)
 {
 	if(IsValid(TargetCharacter) && Damage > 0)
 	{
 		UDamageTextWidgetComponent* NewWidget = NewObject<UDamageTextWidgetComponent>(TargetCharacter, FloatingTextComponentClass);
 		NewWidget->RegisterComponent();
-		NewWidget->SetDamageText(Damage);
+		NewWidget->SetDamageText(Damage, BlockedHit, CriticalHit);
 		NewWidget->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 		NewWidget->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	}

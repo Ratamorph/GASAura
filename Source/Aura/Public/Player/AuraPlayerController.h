@@ -28,7 +28,7 @@ class AURA_API AAuraPlayerController : public APlayerController
 public:
 	AAuraPlayerController();
 
-	void SpawnDamageText(float Damage, ACharacter * TargetCharacter);
+	void SpawnDamageText(float Damage, bool BlockedHit, bool CriticalHit, ACharacter * TargetCharacter);
 
 	UCharacterClassInfo* GetCharacterClassInfo();
 	
