@@ -9,6 +9,8 @@
 #include "Interaction/EnemyInterface.h"
 #include "AuraEnemy.generated.h"
 
+class AAuraEnemyAIController;
+class UBehaviorTree;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEnemyOnAttributeChangedSignature, float, NewValue);
 
 /**
@@ -21,6 +23,8 @@ class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 
 public:
 	AAuraEnemy();
+
+	virtual void PossessedBy(AController* NewController) override;
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
 	virtual int32 GetPlayerLevel() override;
@@ -71,5 +75,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<UMaterialInstance> CharacterDissolveMaterial;
-	
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY()
+	TObjectPtr<AAuraEnemyAIController> AIController;
 };

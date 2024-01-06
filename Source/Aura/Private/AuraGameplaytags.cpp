@@ -26,6 +26,12 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GamePlayTagsInstance.Attributes_Primary_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxHealth"), FString("MaxHealth"));
 	GamePlayTagsInstance.Attributes_Primary_MaxMana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxMana"), FString("MaxMana"));
 
+	GamePlayTagsInstance.Attributes_Resistance_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Fire"), FString("Fire resistance"));
+	GamePlayTagsInstance.Attributes_Resistance_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Arcane"), FString("Arcane resistance"));
+	GamePlayTagsInstance.Attributes_Resistance_Lighting = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Lighting"), FString("Lighting resistance"));
+	GamePlayTagsInstance.Attributes_Resistance_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Resistance.Physical"), FString("Physical resistance"));
+
+	
 	GamePlayTagsInstance.Input_Primary = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Primary"), FString("Primary input"));
 	GamePlayTagsInstance.Input_Secondary = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Secondary"), FString("Secondary input"));
 	GamePlayTagsInstance.Input_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.1"), FString("Ability 1"));
@@ -34,6 +40,17 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GamePlayTagsInstance.Input_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.4"), FString("Ability 4"));
 
 	GamePlayTagsInstance.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"), FString("Damage"));
+	GamePlayTagsInstance.Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Fire"), FString("Fire Damage"));
+	GamePlayTagsInstance.Damage_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Arcane"), FString("Arcane Damage"));
+	GamePlayTagsInstance.Damage_Lighting = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Lighting"), FString("Lighting Damage"));
+	GamePlayTagsInstance.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Physical"), FString("Physical Damage"));
+
+	GamePlayTagsInstance.DamageTypeToResistance.Add(GamePlayTagsInstance.Damage_Fire, GamePlayTagsInstance.Attributes_Resistance_Fire);
+	GamePlayTagsInstance.DamageTypeToResistance.Add(GamePlayTagsInstance.Damage_Arcane, GamePlayTagsInstance.Attributes_Resistance_Arcane);
+	GamePlayTagsInstance.DamageTypeToResistance.Add(GamePlayTagsInstance.Damage_Lighting, GamePlayTagsInstance.Attributes_Resistance_Lighting);
+	GamePlayTagsInstance.DamageTypeToResistance.Add(GamePlayTagsInstance.Damage_Physical, GamePlayTagsInstance.Attributes_Resistance_Physical);
+
+	
 	GamePlayTagsInstance.Effect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"), FString("Hit React tag"));
 	GamePlayTagsInstance.Effect_Death = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.Death"), FString("Death tag"));
 

@@ -34,6 +34,12 @@ public:
 	FGameplayTag Attributes_Primary_MaxHealth;
 	FGameplayTag Attributes_Primary_MaxMana;
 
+	//resistences
+	FGameplayTag Attributes_Resistance_Fire;
+	FGameplayTag Attributes_Resistance_Arcane;
+	FGameplayTag Attributes_Resistance_Lighting;
+	FGameplayTag Attributes_Resistance_Physical;
+	
 	//Input
 	FGameplayTag Input_Primary;
 	FGameplayTag Input_Secondary;
@@ -43,6 +49,13 @@ public:
 	FGameplayTag Input_4;
 
 	FGameplayTag Damage;
+	FGameplayTag Damage_Fire;
+	FGameplayTag Damage_Arcane;
+	FGameplayTag Damage_Lighting;
+	FGameplayTag Damage_Physical;
+
+	TMap<FGameplayTag, FGameplayTag> DamageTypeToResistance;
+	
 	FGameplayTag Effect_HitReact;
 	FGameplayTag Effect_Death;
 	
